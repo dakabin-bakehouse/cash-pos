@@ -1,5 +1,5 @@
 // Dakabin Cash POS offline cache. Network first, falls back to the saved copy when offline.
-const C='cashpos-v2.6';
+const C='cashpos-v2.8';
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./','./index.html']).catch(()=>c.add('./'))));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{
