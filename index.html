@@ -221,7 +221,7 @@ h2.ttl{font-size:26px;margin:4px 0 18px}
 <div id="printArea"></div>
 <script>
 'use strict';
-const VERSION='2.8';
+const VERSION='2.9';
 const $=s=>document.querySelector(s);
 const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
@@ -238,7 +238,8 @@ const hexA=(hex,a)=>{const m=/^#?([0-9a-f]{6})$/i.exec(hex||'');if(!m)return '#e
 const COLORS=['#000000','#990838','#cc0023','#f25b3d','#ff9f40','#ffbf00','#a67c53','#664a2e','#19802a','#00b23b','#12bf94','#006aff','#2693ff','#8716d9','#d936b0'];
 const CAT_COLORS={'CAKES':['#ff9f40','#fff2e5'],'HOT FOODS':['#cc0023','#fff9e5'],'SAVOURIES':['#f25b3d','#ffe5ea'],'FRESH FOOD':['#00b23b','#e5ffea'],'FRESH FOODS':['#00b23b','#e5ffea'],'DRINKS':['#2693ff','#fff9e5'],'DRINK':['#2693ff','#fff9e5'],'PACKS':['#8716d9','#f4e5ff'],'BREADS':['#ffbf00','#e5f2ff'],'COFFEE':['#664a2e','#fff2e5']};
 const SQ={"CAKES|$6.80 slice":["#fff2e5",0,0,1,2],"CAKES|$6.50 slice":["#fff2e5",1,0,1,2],"CAKES|mini tart / macaroon":["#fff2e5",2,0,1,2],"CAKES|port tart":["#fff2e5",3,0,1,2],"CAKES|fresh cream donut":["#fff2e5",0,2,1,2],"CAKES|red velvet cake":["#fff2e5",1,2,1,2],"CAKES|mud cake":["#fff2e5",2,2,1,2],"CAKES|mousse cake":["#fff2e5",3,2,1,2],"CAKES|sponge cake":["#fff2e5",0,4,1,2],"CAKES|buttercream cake":["#fff2e5",1,4,1,2],"CAKES|cheesecake":["#fff2e5",2,4,1,2],"CAKES|mini (6) pack":["#ffeae5",0,6,1,1],"CAKES|cheese tarts 4pack":["#ffeae5",1,6,1,1],"CAKES|macaroons (4) pack":["#ffeae5",2,6,1,1],"HOT FOODS|sausage roll":["#fff9e5",0,0,1,2],"HOT FOODS|cheese bacon ss roll":["#fff9e5",1,0,1,2],"HOT FOODS|smokey dog":["#fff9e5",2,0,1,2],"HOT FOODS|pork fennel":["#fff9e5",3,0,1,2],"HOT FOODS|mince pie / chunky/ quiche":["#fff9e5",0,2,1,2],"HOT FOODS|flavour pie":["#fff9e5",1,2,1,2],"HOT FOODS|gourmet pie":["#fff9e5",2,2,1,2],"HOT FOODS|spinach feta":["#fff9e5",3,2,1,2],"HOT FOODS|pea":["#f2f2f2",0,4,1,1],"HOT FOODS|mini pie":["#f2f2f2",1,4,1,2],"HOT FOODS|ham cheese croissant":["#f2f2f2",2,4,1,2],"HOT FOODS|sauce":["#f2f2f2",0,5,1,1],"SAVOURIES|croissant plain":["#ffe5ea",0,0,1,2],"SAVOURIES|choc croissant":["#ffe5ee",1,0,1,2],"SAVOURIES|almond croissant":["#ffe5ee",2,0,1,2],"SAVOURIES|danish":["#ffe5ea",3,0,1,2],"SAVOURIES|donut":["#ffe5ea",0,2,1,2],"SAVOURIES|cheese bacon":["#ffe5ea",1,2,1,2],"SAVOURIES|vegemite scroll":["#ffe5ee",2,2,1,2],"SAVOURIES|pull a part":["#ffe5ea",0,4,1,2],"SAVOURIES|smiley face":["#ffe5ea",1,4,1,2],"SAVOURIES|loaded cookie jumbo":["#ffe5ee",2,4,1,2],"SAVOURIES|mini biscuit":["#f2f2f2",0,6,1,1],"SAVOURIES|xmas cupcake":["#ffeae5",1,6,1,1],"FRESH FOOD|sandwich":["#e5ffea",0,0,1,2],"FRESH FOOD|sandwich chicken salad":["#e5f0ff",1,0,1,2],"FRESH FOOD|salad roll":["#e5ffea",2,0,1,2],"FRESH FOOD|fruit salad":["#e5ffea",3,0,1,2],"FRESH FOOD|banh mi":["#e5ffea",0,2,1,2],"FRESH FOOD|roasted pork banh mi":["#e5fff9",1,2,1,2],"FRESH FOOD|beef banh mi":["#e5fff9",2,2,1,2],"FRESH FOOD|loaded street food banh mi":["#f2f2f2",3,2,1,1],"FRESH FOOD|noodle salad":["#e5ffea",0,4,1,2],"FRESH FOOD|noodle salad a bit of everything":["#e5fff9",1,4,1,2],"FRESH FOOD|roasted pork noodle salad":["#e5fff9",2,4,1,2],"FRESH FOOD|extra meat":["#ffe5ee",0,6,1,1],"FRESH FOOD|extra pate/ viet mayo":["#ffe5ee",1,6,1,1],"FRESH FOOD|sauce":["#f2f2f2",2,6,1,1],"FRESH FOOD|egg":["#f2f2f2",3,6,1,1],"DRINKS|600ml soft drink":["#fff9e5",0,0,1,2],"DRINKS|375ml can":["#fff9e5",1,0,1,2],"DRINKS|iced teas":["#fff9e5",2,0,1,2],"DRINKS|juice":["#fff9e5",3,0,1,2],"DRINKS|pump":["#fff9e5",0,2,1,2],"DRINKS|mt franklin":["#fff9e5",1,2,1,2],"DRINKS|milk":["#fff9e5",2,2,1,2],"DRINKS|powederade":["#fff9e5",3,2,1,2],"DRINKS|energy drink":["#fff9e5",0,4,1,2],"DRINKS|ginger beer":["#fff9e5",1,4,1,2],"BREADS|white loaf":["#e5f2ff",0,0,1,2],"BREADS|wmeal / multi loaf":["#e5f2ff",1,0,1,2],"BREADS|café white loaf":["#e5f2ff",2,0,1,2],"BREADS|café wmeal / multi":["#e5f2ff",3,0,1,2],"BREADS|sourdough":["#e5f2ff",0,2,1,2],"BREADS|soylin sourdough":["#e5f2ff",1,2,1,2],"BREADS|french stick":["#e5f2ff",2,2,1,2],"BREADS|roll white pack":["#e5f2ff",3,2,1,2],"BREADS|dinner roll pack":["#e5f2ff",0,4,1,2],"BREADS|dinner roll single":["#f2f2f2",1,4,1,1],"BREADS|viet roll":["#f2f2f2",2,4,1,1],"BREADS|white roll single":["#f2f2f2",1,5,1,1],"PACKS|swiss roll":["#f4e5ff",0,0,1,2],"PACKS|rainbow":["#f4e5ff",1,0,1,2],"PACKS|butterswiss":["#ffe5f9",2,0,1,2],"PACKS|cupcake pack":["#f4e5ff",3,0,1,2],"PACKS|banana bread":["#f4e5ff",0,2,1,2],"PACKS|carrot bar":["#f4e5ff",1,2,1,2],"PACKS|family quiche":["#f4e5ff",2,2,1,2],"PACKS|biscuit pack":["#f4e5ff",3,2,1,2],"PACKS|cheese tarts 4pack":["#ffe5ee",0,4,1,2],"COFFEE|small cup":["#ffe5f9",0,0,1,1],"COFFEE|medium cup":["#ffe5f9",1,0,1,1],"COFFEE|large cup":["#ffe5f9",2,0,1,1],"COFFEE|iced coffee":["#e5f0ff",3,0,1,1],"COFFEE|biscoff":["#e5f2ff",0,1,1,1],"COFFEE|tiramisu latte":["#e5f2ff",1,1,1,1],"COFFEE|matcha":["#e5f2ff",2,1,1,1],"COFFEE|jumbo":["#e5f0ff",3,1,1,1],"COFFEE|expresso":["#fff2e5",0,2,1,1],"COFFEE|long black":["#fff2e5",1,2,1,1],"COFFEE|flat white":["#fff2e5",2,2,1,1],"COFFEE|milk foam":["#e5f2ff",3,2,1,1],"COFFEE|latte":["#fff2e5",0,3,1,1],"COFFEE|capuchino":["#fff2e5",1,3,1,1],"COFFEE|mocha":["#fff2e5",2,3,1,1],"COFFEE|hot choc":["#fff2e5",3,3,1,1],"COFFEE|picolo":["#fff2e5",0,4,1,1],"COFFEE|machiato":["#fff2e5",1,4,1,1],"COFFEE|baby chino":["#fff2e5",2,4,1,1],"COFFEE|chai latte":["#e5ffea",0,5,1,1],"COFFEE|english breakfast":["#e5ffea",1,5,1,1],"COFFEE|earl grey":["#e5ffea",2,5,1,1],"COFFEE|skim milk":["#fff9e5",0,6,1,1],"COFFEE|soy milk":["#fff9e5",1,6,1,1],"COFFEE|oat milk":["#fff9e5",2,6,1,1],"COFFEE|lactose free":["#fff9e5",3,6,1,1],"COFFEE|extra shot":["#f2f2f2",0,7,1,1],"COFFEE|caramel syrup":["#f2f2f2",1,7,1,1],"COFFEE|vanilla syrup":["#f2f2f2",2,7,1,1],"COFFEE|peppermint syrup":["#f2f2f2",3,7,1,1],"COFFEE|sugar":["#f2f2f2",0,8,1,1],"COFFEE|misc gst":["#f2f2f2",1,8,1,1]};
-const CAT_ORDER=['CAKES','HOT FOODS','SAVOURIES','PACKS','BREADS','COFFEE','DRINKS','FRESH FOOD'];
+const CAT_ORDER=['CAKES','HOT FOODS','SAVOURIES','FRESH FOOD','DRINKS','BREADS','PACKS','COFFEE'];
+const HOME_ORDER=['misc gst','misc no gst','bag','box'];
 function catRank(n){const i=CAT_ORDER.indexOf(grpName(n));return i<0?99:i}
 function grpName(n){n=String(n||'').trim().toUpperCase();return n==='FRESH FOODS'?'FRESH FOOD':n==='DRINK'?'DRINKS':n}
 function sqHome(name,catName){if(sqItem(name,catName))return catName;const k=Object.keys(SQ).find(k=>k.endsWith('|'+String(name||'').toLowerCase()));return k?k.split('|')[0]:catName}
@@ -299,12 +300,13 @@ function defaultCatalog(){
   it("White Loaf",'BREADS',450),it("Wmeal / Multi Loaf",'BREADS',490),it("Caf\u00e9 White Loaf",'BREADS',470),it("Caf\u00e9 Wmeal / Multi",'BREADS',490),it("Sourdough",'BREADS',800),it("Soylin Sourdough",'BREADS',850),it("French Stick",'BREADS',500),it("Roll White Pack",'BREADS',470),it("Dinner roll Pack",'BREADS',380),it("Dinner roll Single",'BREADS',null),it("White Roll Single",'BREADS',null),it("Viet roll",'BREADS',null),
   it("Small Cup",'COFFEE',null),it("Medium Cup",'COFFEE',null),it("Large Cup",'COFFEE',null),it("Iced Coffee",'COFFEE',null),it("Biscoff",'COFFEE',null),it("Tiramisu Latte",'COFFEE',null),it("Matcha",'COFFEE',null),it("Jumbo",'COFFEE',null),it("Expresso",'COFFEE',null),it("Long Black",'COFFEE',null),it("Flat white",'COFFEE',null),it("Milk foam",'COFFEE',null),it("Latte",'COFFEE',null),it("Capuchino",'COFFEE',null),it("Mocha",'COFFEE',null),it("Hot Choc",'COFFEE',null),it("Picolo",'COFFEE',null),it("Machiato",'COFFEE',null),it("Baby Chino",'COFFEE',null),it("Chai Latte",'COFFEE',null),it("English Breakfast",'COFFEE',null),it("Earl Grey",'COFFEE',null),it("Skim Milk",'COFFEE',null),it("Soy Milk",'COFFEE',null),it("Oat Milk",'COFFEE',null),it("Lactose Free",'COFFEE',null),it("Extra Shot",'COFFEE',null),it("Caramel Syrup",'COFFEE',null),it("Vanilla Syrup",'COFFEE',null),it("Peppermint Syrup",'COFFEE',null),
   it('Misc GST',null,null),it('Misc NO GST',null,null),it('Bag',null,null),it('Box',null,null)];
- return {cats,items,updated:0,colorsV:4};
+ cats.sort((a,b)=>catRank(a.name)-catRank(b.name));
+ return {cats,items,updated:0,colorsV:5};
 }
 if(!catalog){catalog=defaultCatalog();LS.set('catalog',catalog)}
 
 const okId=x=>typeof x==='string'&&/^[A-Za-z0-9_-]{1,40}$/.test(x);
-function cleanCatalog(c){const map={};const migrate=c.colorsV!==4;
+function cleanCatalog(c){const map={};const migrate=c.colorsV!==5;
  const cats=(c.cats||[]).map(x=>{const id=okId(x.id)?x.id:uid();map[x.id]=id;const d=migrate?catPick(x.name):null;
   const o={id,name:String(x.name||'Category'),color:d?d[0]:cleanColor(x.color)};const ic=d?d[1]:(hexOk(x.itemColor)?x.itemColor:null);if(ic)o.itemColor=ic;return o});
  if(migrate)cats.sort((a,b)=>catRank(a.name)-catRank(b.name));
@@ -313,7 +315,7 @@ function cleanCatalog(c){const map={};const migrate=c.colorsV!==4;
   const sq=migrate?sqItem(nm,cn):null;
   const col=sq?sq.color:(hexOk(i.color)?i.color:null);if(col)o.color=col;
   const pos=sq?sq.pos:validPos(i.pos);if(pos)o.pos=pos;if(typeof i.hide==='boolean')o.hide=i.hide;return o});
- return {cats,items,updated:+c.updated||0,colorsV:4}}
+ return {cats,items,updated:+c.updated||0,colorsV:5}}
 function cleanStaff(t){return {updated:+t.updated||0,list:(t.list||[]).filter(s=>okId(s.id)).map(s=>({id:s.id,name:String(s.name||''),role:s.role==='manager'?'manager':'staff',pin:String(s.pin||'')}))}}
 function cleanSale(s){if(!s||!okId(s.id))return null;s.no=String(s.no||'');s.staffName=String(s.staffName||'');s.refunds=Array.isArray(s.refunds)?s.refunds.filter(r=>r&&okId(r.id)):[];s.lines=Array.isArray(s.lines)?s.lines:[];return s}
 catalog=cleanCatalog(catalog);staff=cleanStaff(staff);
@@ -376,7 +378,7 @@ function cleanShared(v){v=v||{};const t=(x,n)=>String(x==null?'':x).slice(0,n);c
  o.biz=t(v.biz,80);o.addr=t(v.addr,120);o.phone=t(v.phone,30);o.abn=t(v.abn,30);o.footer=t(v.footer,120);
  o.cashDisc=Math.max(0,Math.min(50,+v.cashDisc||0));
  o.printerIp=t(v.printerIp,80).replace(/[^A-Za-z0-9.:\-]/g,'');o.printerHttps=v.printerHttps!==false;o.printerPort=t(v.printerPort,5).replace(/\D/g,'');
- const cols=parseInt(v.cols,10);o.cols=cols>=32&&cols<=64?cols:42;o.autoPrint=v.autoPrint!==false;o.drawer=v.drawer!==false;return o}
+ const cols=parseInt(v.cols,10);o.cols=cols>=32&&cols<=64?cols:42;o.autoPrint=false;o.drawer=v.drawer!==false;return o}
 const kvObj=k=>k==='catalog'?catalog:k==='staff'?staff:{updated:cfg.sharedUpdated||0,values:pickShared(cfg)};
 async function pushDirtyKV(){for(const k of ['catalog','staff','settings'])if(dirty[k]){const obj=kvObj(k),u=obj.updated;await pushKV(k,obj);if(kvObj(k).updated===u){dirty[k]=false;LS.set('dirty',dirty)}}}
 async function pullKV(){
@@ -547,7 +549,6 @@ function settingsFields(c){
  ${sel('s_https','Printer connection',c.printerHttps===false?'no':'yes',[['yes','HTTPS (needed when this app is on https)'],['no','HTTP']])}
  ${f('s_port','Printer port (blank = standard; try 8043 if test print fails)',c.printerPort,'inputmode="numeric" maxlength="5"')}
  ${sel('s_cols','Receipt width',String(c.cols||42),[['42','42 characters (safe)'],['48','48 characters (full 80mm)']])}
- ${sel('s_auto','Print receipt after each sale',c.autoPrint===false?'no':'yes',[['yes','Yes'],['no','No, only when asked']])}
  ${sel('s_drawer','Open cash drawer on sale and refund',c.drawer===false?'no':'yes',[['yes','Yes'],['no','No']])}
  ${c.mode==="viewer"?'<p class="mute">Test print only works from the iPad on the shop network.</p>':'<button class="btn" data-a="testPrint">Test print</button>'}
  <h4>Database (Supabase)</h4>
@@ -557,7 +558,7 @@ function settingsFields(c){
 function readSettings(){
  const g=id=>(($('#'+id)||{}).value||'').trim();
  return {mode:g('s_mode')||'till',device:g('s_device'),biz:g('s_biz'),addr:g('s_addr'),phone:g('s_phone'),abn:g('s_abn'),footer:g('s_footer'),cashDisc:(v=>v===''?2:Math.max(0,Math.min(50,parseFloat(v)||0)))(g('s_cashdisc')),prefix:g('s_prefix')||'C',
-  printerIp:g('s_ip').replace(/^https?:\/\//,'').replace(/\/.*$/,''),printerHttps:g('s_https')!=='no',printerPort:g('s_port').replace(/\D/g,''),cols:parseInt(g('s_cols')||'42',10),autoPrint:g('s_auto')!=='no',drawer:g('s_drawer')!=='no',
+  printerIp:g('s_ip').replace(/^https?:\/\//,'').replace(/\/.*$/,''),printerHttps:g('s_https')!=='no',printerPort:g('s_port').replace(/\D/g,''),cols:parseInt(g('s_cols')||'42',10),autoPrint:false,drawer:g('s_drawer')!=='no',
   sbUrl:g('s_sburl').replace(/\/+$/,''),sbKey:g('s_sbkey')};
 }
 function setupHTML(){
@@ -747,6 +748,7 @@ function amountPrompt(title,cb,btn='Add'){
 const catOf=id=>catalog.cats.find(c=>c.id===id);
 const priceLabel=i=>i.vars.length>1||!i.vars[0]||i.vars[0].price==null?'Variable':money(i.vars[0].price);
 function itemBg(i,c){return hexOk(i.color)?i.color:(c&&hexOk(c.itemColor)?c.itemColor:(c?hexA(c.color,.2):'#e9ebee'))}
+function homeSq(cat){return !cat&&!V.q&&window.innerWidth>600}
 function layoutOn(cat){return !!cat&&!V.q&&window.innerWidth>600&&catalog.items.some(i=>i.cat===cat.id&&!i.hide&&validPos(i.pos))}
 function sqPlace(cat){const its=catalog.items.filter(i=>i.cat===cat.id&&!i.hide);let maxRow=-1;const placed=[],rest=[];
  for(const i of its){const p=validPos(i.pos);if(p){placed.push([i,p]);maxRow=Math.max(maxRow,p[1]+p[3]-1)}else rest.push(i)}
@@ -758,13 +760,16 @@ function gridTiles(){
 
  if(cat&&layoutOn(cat))return sqPlace(cat).map(([i,p])=>itemTile(i,p)).join('');
  if(cat)return catalog.items.filter(i=>i.cat===cat.id&&!i.hide).map(i=>itemTile(i)).join('')||'<p class="mute">No items in this category yet. Add them in Items.</p>';
- return catalog.cats.map(c=>{const n=catalog.items.filter(i=>i.cat===c.id&&!i.hide).length;return `<button class="tile cat" style="background:${cleanColor(c.color)};color:${txtOn(c.color)}" data-a="openCat" data-v="${h(c.id)}"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 7.5 12 12l9-4.5L12 3z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/></svg><span>${h(c.name)}</span><span class="sub">${n} item${n===1?'':'s'}</span></button>`}).join('')
-  +catalog.items.filter(i=>!catOf(i.cat)).map(i=>`<button class="tile small" data-a="addItem" data-v="${h(i.id)}"><span>${h(i.name)}</span>${priceLabel(i)?`<span class="sub">${priceLabel(i)}</span>`:''}</button>`).join('');
+ const hs=homeSq(cat),cs=catalog.cats,nr=2*Math.ceil(cs.length/4);
+ const catHtml=cs.map((c,k)=>{const n=catalog.items.filter(i=>i.cat===c.id&&!i.hide).length;return `<button class="tile cat" style="background:${cleanColor(c.color)};color:#fff${hs?`;grid-column:${k%4+1};grid-row:${2*Math.floor(k/4)+1}/span 2`:''}" data-a="openCat" data-v="${h(c.id)}"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 7.5 12 12l9-4.5L12 3z"/><path d="m3 12 9 4.5 9-4.5"/><path d="m3 16.5 9 4.5 9-4.5"/></svg><span>${h(c.name)}</span><span class="sub">${n} item${n===1?'':'s'}</span></button>`}).join('');
+ const rank=n=>{const x=HOME_ORDER.indexOf(String(n).toLowerCase());return x<0?99:x};
+ const loose=catalog.items.filter(i=>!catOf(i.cat)&&!i.hide).map((i,k)=>[i,k]).sort((a,b)=>rank(a[0].name)-rank(b[0].name)||a[1]-b[1]).map(x=>x[0]);
+ return catHtml+loose.map((i,k)=>`<button class="tile small${hs?' sm':''}" ${hs?`style="grid-column:${k%4+1};grid-row:${nr+Math.floor(k/4)+1}" `:''}data-a="addItem" data-v="${h(i.id)}"><span>${h(i.name)}</span>${priceLabel(i)?`<span class="sub">${priceLabel(i)}</span>`:''}</button>`).join('');
 }
 function menuHTML(){
  const cat=catOf(V.cat);
  return `<div class="topbar">${cat?'<button class="round" data-a="back" aria-label="Back">←</button>':''}<div class="crumb"><span>${h((cfg.biz||'Dakabin Bakehouse')+' Menu')}</span>${cat?`<span>›</span><b>${h(cat.name)}</b>`:''}</div>
- <input class="search" id="q" type="search" placeholder="Search items" value="${h(V.q)}" oninput="onSearch(this.value)" autocomplete="off"></div><div class="grid${layoutOn(cat)?' sq':(cat&&catalog.items.filter(i=>i.cat===cat.id).length>16?' dense':'')}" id="grid">${gridTiles()}</div>`;
+ <input class="search" id="q" type="search" placeholder="Search items" value="${h(V.q)}" oninput="onSearch(this.value)" autocomplete="off"></div><div class="grid${(layoutOn(cat)||homeSq(cat))?' sq':(cat&&catalog.items.filter(i=>i.cat===cat.id).length>16?' dense':'')}" id="grid">${gridTiles()}</div>`;
 }
 function onSearch(v){V.q=v.trim();const g=$('#grid');if(g)g.innerHTML=gridTiles()}
 A.openCat=v=>{V.cat=v;V.q='';render()};
@@ -856,9 +861,10 @@ A.completeSale=()=>{
  PAY.done=true;sales.push(s);
  if(!saveSales()){sales.pop();LS.set('rcpt',n-1);closeModal();return openModal('<h3>Sale not saved</h3><p>The iPad storage is full, so this sale was not recorded and the bill is still open. Do not take the cash yet.</p><p>Go to More, Save backup now, then ask a manager to clear space.</p><div class="mrow"><button class="btn primary" data-a="close">OK</button></div>')}
  queueSale(s.id);bill={lines:[],discount:null};
- if(cfg.autoPrint!==false)printSale(s);else if(cfg.drawer!==false&&cfg.printerIp)kickDrawer();
+ if(cfg.drawer!==false&&cfg.printerIp)kickDrawer();
+ V.billOpen=false;V.cat=null;V.q='';render();
  openModal(`<div style="text-align:center"><div class="mute">${s.change?'Change to give':'No change'}</div><div class="change">${money(s.change)}</div><div class="mute">Received ${money(tendered)} for ${money(s.total)}. Receipt ${h(s.no)}</div></div>
- <div class="mrow"><button class="btn" data-a="reprint" data-v="${h(s.id)}">${cfg.autoPrint!==false?'Reprint':'Print receipt'}</button><button class="btn primary" data-a="newSale">New sale</button></div>`);
+ <div class="mrow"><button class="btn primary" data-a="newSale">New sale</button></div>`);
  refreshBill();
 };
 A.newSale=()=>{V.billOpen=false;closeModal();V.cat=null;V.q='';render()};
@@ -890,7 +896,7 @@ A.openSale=id=>{
  ${s.rounding?`<div class="row"><span>Cash rounding</span><span>${money(s.rounding)}</span></div>`:''}
  <div class="row big"><span>Total</span><span>${money(s.total)}</span></div><div class="row"><span>Cash received</span><span>${money(s.tendered)}</span></div><div class="row"><span>Change</span><span>${money(s.change)}</span></div>
  ${s.refunds.map(r=>`<div class="row down"><span>Refund ${fmtDT(r.at)}, ${h(r.byName)}${r.reason?', '+h(r.reason):''}</span><span>${money(-r.amount)}</span></div>`).join('')}</div>
- ${cfg.mode==='till'?'':'<p class="mute">Refunds and reprints are done at the till.</p>'}<div class="mrow">${cfg.mode==='till'?`<button class="btn" data-a="reprint" data-v="${h(s.id)}">Reprint</button>`:''}${cfg.mode==='till'&&s.status!=='refunded'?`<button class="btn danger" data-a="refund" data-v="${h(s.id)}">Refund</button>`:''}<button class="btn primary" data-a="close">Done</button></div>`);
+ ${cfg.mode==='till'?'':'<p class="mute">Refunds and reprints are done at the till.</p>'}<div class="mrow">${cfg.mode==='till'?`<button class="btn" data-a="reprint" data-v="${h(s.id)}">Print receipt</button>`:''}${cfg.mode==='till'&&s.status!=='refunded'?`<button class="btn danger" data-a="refund" data-v="${h(s.id)}">Refund</button>`:''}<button class="btn primary" data-a="close">Done</button></div>`);
 };
 let RF=null;
 A.refund=id=>{const s=sales.find(x=>x.id===id);if(!s)return;closeModal();
@@ -1020,15 +1026,15 @@ async function importFile(file){
   });
   if(!items.length)throw new Error('No items found in the file.');
   const names=new Set(items.map(i=>i.name.toLowerCase()));const removed=catalog.items.filter(i=>!names.has(i.name.toLowerCase())).map(i=>i.name);
-  IMP=cleanCatalog({cats,items,colorsV:4});
+  IMP=cleanCatalog({cats,items,colorsV:5});
   const few=a=>a.length?`<br><small class="mute">${a.slice(0,6).map(h).join(', ')}${a.length>6?` and ${a.length-6} more`:''}</small>`:'';
   openModal(`<h3>Import preview</h3><p>${cats.length} categories and ${items.length} items found.</p>
   <div class="row"><span>New items${few(added)}</span><b>${added.length}</b></div><div class="row"><span>Price changes${few(changed)}</span><b>${changed.length}</b></div><div class="row"><span>Items removed${few(removed)}</span><b>${removed.length}</b></div>
   <div class="mrow"><button class="btn" data-a="close">Cancel</button><button class="btn primary" data-a="applyImport">Replace items</button></div>`);
  }catch(e){toast(e.message,true)}
 }
-A.loadMenu=()=>{if(!confirm('Replace all items and categories with the 3 Oct menu?'))return;const c=defaultCatalog();catalog={cats:c.cats,items:c.items,updated:0,colorsV:4};saveCatalog();V.cat=null;V.itemsTab='items';render();toast('Menu loaded')};
-A.applyImport=()=>{catalog={cats:IMP.cats,items:IMP.items,updated:0,colorsV:4};saveCatalog();IMP=null;closeModal();V.cat=null;V.itemsTab='items';render();toast('Items replaced from Square')};
+A.loadMenu=()=>{if(!confirm('Replace all items and categories with the 3 Oct menu?'))return;const c=defaultCatalog();catalog={cats:c.cats,items:c.items,updated:0,colorsV:5};saveCatalog();V.cat=null;V.itemsTab='items';render();toast('Menu loaded')};
+A.applyImport=()=>{catalog={cats:IMP.cats,items:IMP.items,updated:0,colorsV:5};saveCatalog();IMP=null;closeModal();V.cat=null;V.itemsTab='items';render();toast('Items replaced from Square')};
 
 /* ---------- team ---------- */
 function staffHTML(){
@@ -1070,7 +1076,6 @@ function moreHTML(){
  <button class="mi" data-a="syncNowBtn"><b>Sync now</b><span id="syncMore">${syncLabel()}</span></button>
  ${localMode()?'':'<button class="mi" data-a="adminOut"><b>Admin sign out</b><span>Signed in as '+h((ADMIN&&ADMIN.name)||'admin')+'. Ends after 15 minutes idle.</span></button>'}`
  :`<button class="mi" data-a="adminIn"><b>Admin sign in</b><span>Andy or Tiv: items, reports, team and settings (needs your 6-digit code)</span></button>`}
- <button class="mi" data-a="reprintLast"><b>Reprint last receipt</b><span>${sales.length?'Receipt '+h(sales[sales.length-1].no):'No sales yet'}</span></button>
  <button class="mi" data-a="lock"><b>Lock</b><span>Back to the PIN screen${adm&&!localMode()?' and sign admin out':''}</span></button></div>`;
 }
 function dayCash(day){
