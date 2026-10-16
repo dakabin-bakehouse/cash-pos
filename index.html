@@ -221,7 +221,7 @@ h2.ttl{font-size:26px;margin:4px 0 18px}
 <div id="printArea"></div>
 <script>
 'use strict';
-const VERSION='2.9.2';
+const VERSION='2.9.3';
 const $=s=>document.querySelector(s);
 const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
@@ -635,7 +635,7 @@ function loginHTML(){
  return `<div class="center"><div class="brand">${h(cfg.biz||'Dakabin Bakehouse')}</div><div class="mute">Cash till. Enter your PIN</div>
  <div class="dots">${[0,1,2,3].map(i=>`<i class="${i<PIN.length?'f':''}"></i>`).join('')}</div>
  <div class="pinpad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-a="pin" data-v="${h(n)}">${n}</button>`).join('')}<span></span><button data-a="pin" data-v="0">0</button><button data-a="pin" data-v="del" aria-label="Delete">⌫</button></div>
- ${!staff.list.length?`<p class="mute" style="margin-top:20px">No team loaded from the database yet. <button class="link" data-a="retryLogin">Try again</button></p><button class="link" data-a="openSetup">Device settings</button>`:''}</div>`;
+ ${!staff.list.length?`<p class="mute" style="margin-top:20px">No team loaded from the database yet. <button class="link" data-a="retryLogin">Try again</button></p><button class="link" data-a="openSetup">Device settings</button>`:''}<p class="mute" style="margin-top:22px;font-size:12px">Version ${VERSION}</p></div>`;
 }
 A.pin=v=>{
  if(pinLocked()){PIN='';return render()}
@@ -1099,7 +1099,7 @@ function moreHTML(){
  <button class="mi" data-a="syncNowBtn"><b>Sync now</b><span id="syncMore">${syncLabel()}</span></button>
  ${localMode()?'':'<button class="mi" data-a="adminOut"><b>Admin sign out</b><span>Signed in as '+h((ADMIN&&ADMIN.name)||'admin')+'. Ends after 15 minutes idle.</span></button>'}`
  :`<button class="mi" data-a="adminIn"><b>Admin sign in</b><span>Andy or Tiv: items, reports, team and settings (needs your 6-digit code)</span></button>`}
- <button class="mi" data-a="lock"><b>Lock</b><span>Back to the PIN screen${adm&&!localMode()?' and sign admin out':''}</span></button></div>`;
+ <button class="mi" data-a="lock"><b>Lock</b><span>Back to the PIN screen${adm&&!localMode()?' and sign admin out':''}</span></button></div><p class="mute" style="margin:14px 4px;font-size:13px">Cash POS version ${VERSION}</p>`;
 }
 function dayCash(day){
  const a=sod(day),b=addDays(a,1),inR=iso=>{const d=new Date(iso);return d>=a&&d<b};
