@@ -221,7 +221,7 @@ h2.ttl{font-size:26px;margin:4px 0 18px}
 <div id="printArea"></div>
 <script>
 'use strict';
-const VERSION='2.9';
+const VERSION='2.9.2';
 const $=s=>document.querySelector(s);
 const h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
@@ -280,7 +280,7 @@ function pinLocked(){if(Date.now()<pinLockUntil){toast(`Too many wrong PINs. Try
 function pinFailed(){pinFails++;if(pinFails>=5){pinFails=0;pinLockUntil=Date.now()+30000}}
 
 let toastT;
-function toast(msg,err){const t=$('#toast');t.textContent=msg;t.className='show'+(err?' err':'');clearTimeout(toastT);toastT=setTimeout(()=>t.className='',err?4500:2200)}
+function toast(msg,err){const t=$('#toast');t.textContent=msg;t.className='show'+(err?' err':'');clearTimeout(toastT);toastT=setTimeout(()=>t.className='',err?(msg.length>90?12000:4500):(msg.length>90?8000:2200))}
 function openModal(html){const m=$('#modal');m.innerHTML=`<div class="sheet" role="dialog" aria-modal="true">${html}</div>`;m.classList.remove('hidden');MODAL=true}
 function closeModal(){const m=$('#modal');m.classList.add('hidden');m.innerHTML='';MODAL=false}
 A.close=closeModal;
@@ -501,12 +501,14 @@ function eposXml(lines,kick,cut=true){
  b+='</epos-print>';
  return `<?xml version="1.0" encoding="utf-8"?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"><s:Body>${b}</s:Body></s:Envelope>`;
 }
-async function sendEpos(xml){
- const url=`${cfg.printerHttps?'https':'http'}://${cfg.printerIp}${cfg.printerPort?':'+cfg.printerPort:''}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
+function eposBase(port){return `${cfg.printerHttps?'https':'http'}://${cfg.printerIp}${port?':'+port:''}`}
+async function sendEpos(xml,port){
+ if(port===undefined)port=cfg.printerPort;
+ const url=eposBase(port)+'/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000';
  const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),12000);
  try{
   const r=await fetch(url,{method:'POST',headers:{'Content-Type':'text/xml; charset=utf-8','SOAPAction':'""'},body:xml,signal:ctl.signal});
-  const txt=await r.text();if(!/success="true"/.test(txt))throw new Error('Printer replied with an error (paper or cover?)');
+  const txt=await r.text();if(!/success="true"/.test(txt))throw new Error('Printer replied with an error');
  }finally{clearTimeout(t)}
 }
 function htmlPrint(lines){
@@ -514,19 +516,40 @@ function htmlPrint(lines){
  $('#printArea').innerHTML='<pre>'+lines.map(l=>h(l.align==='center'?' '.repeat(Math.max(0,Math.floor((W-l.text.length)/2)))+l.text:l.text)).join('\n')+'</pre>';
  window.print();
 }
+async function probePrinter(port){const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),6000);
+ try{await fetch(eposBase(port)+'/',{mode:'no-cors',cache:'no-store',signal:ctl.signal});return 'ok'}catch(e){return e.name==='AbortError'?'timeout':'fail'}finally{clearTimeout(t)}}
+async function printerProblem(e,port){
+ const where=cfg.printerIp+(port?':'+port:'');
+ if(e&&/Printer replied/.test(e.message||''))return 'D: The printer answered but did not print. Check the paper and that the cover is shut.';
+ if(e&&e.name==='AbortError')return 'C: No answer from the printer at '+where+'. Check the IP address and port.';
+ const p=await probePrinter(port);
+ if(p==='ok')return 'B: The iPad reaches the printer at '+where+' securely, but the printer refused the print request.';
+ if(p==='timeout')return 'C: No answer from the printer at '+where+'. Check the IP address and port.';
+ return 'A: No secure link to the printer at '+where+'. Its certificate is not trusted yet: Settings, General, About, Certificate Trust Settings, switch it on.';
+}
 async function printLines(lines,kick){
  if(!cfg.printerIp){htmlPrint(lines);return true}
  try{await sendEpos(eposXml(lines,kick&&cfg.drawer!==false));return true}
- catch(e){toast('Printer not reached. Check printer IP and HTTPS in Settings. '+(e.name==='AbortError'?'(timed out)':e.message),true);return false}
+ catch(e){toast(await printerProblem(e,cfg.printerPort),true);return false}
 }
 const printSale=s=>printLines(receiptLines(s),true);
 const printRefund=(s,r)=>printLines(receiptLines(s,r),true);
 async function kickDrawer(){
  if(!cfg.printerIp)return toast('No printer IP set in Settings',true);
- try{await sendEpos(eposXml([],true,false));toast('Drawer opened')}catch(e){toast('Printer not reached: '+e.message,true)}
+ try{await sendEpos(eposXml([],true,false));toast('Drawer opened')}catch(e){toast(await printerProblem(e,cfg.printerPort),true)}
 }
 A.drawer=()=>kickDrawer();
-A.testPrint=()=>{const c=readSettings();const old=cfg;cfg={...old,...c};printLines([{text:'Test print OK',align:'center',bold:true,big:true},{text:fmtDT(new Date().toISOString()),align:'center'},{text:'-'.repeat(cfg.cols||42)}],false).then(ok=>{if(ok)toast('Test print sent')});cfg=old};
+A.testPrint=async()=>{const c=readSettings();const old=cfg;cfg={...old,...c};
+ const lines=[{text:'Test print OK',align:'center',bold:true,big:true},{text:fmtDT(new Date().toISOString()),align:'center'},{text:'-'.repeat(cfg.cols||42)}];
+ try{
+  if(!cfg.printerIp){htmlPrint(lines);return}
+  toast('Testing the printer...');
+  const xml=eposXml(lines,false),mine=cfg.printerPort||'',alt=mine?'':'8043';
+  let e1;try{await sendEpos(xml,mine);toast('Test print sent');return}catch(e){e1=e}
+  try{await sendEpos(xml,alt);toast(alt?'It printed using port 8043. Type 8043 in Printer port and tap Save settings.':'It printed with the port left blank. Clear Printer port and tap Save settings.');return}catch(e){}
+  toast(await printerProblem(e1,mine),true);
+ }finally{cfg=old}
+};
 
 /* ---------- setup & settings ---------- */
 function settingsFields(c){
@@ -587,7 +610,7 @@ A.saveSettings=async()=>{
  await syncNow();render();
 };
 function settingsScreenHTML(){
- return `<h2 class="ttl">Settings</h2><div class="form" style="padding-top:0">${settingsFields(cfg)}
+ return `<h2 class="ttl">Settings</h2><p class="mute" style="margin:-6px 0 8px">Cash POS version ${VERSION}</p><div class="form" style="padding-top:0">${settingsFields(cfg)}
  <div class="mrow"><button class="btn primary" data-a="saveSettings">Save settings</button></div>
  ${cfg.mode==='till'&&cfg.sbUrl?`<h4>Till connection</h4><p class="mute">${TILL?'This iPad is connected as the till ('+h(TILL.user.email||'till account')+').':'Not connected.'}</p>${TILL?'<button class="btn danger" data-a="disconnectTill">Disconnect this iPad</button>':''}`:''}
  <p class="mute" style="margin-top:18px">Version ${VERSION}.</p></div>`;
@@ -1324,7 +1347,9 @@ function gateHTML(){return `<div class="center"><div class="form" style="text-al
  <p>Tap the Share button, then <b>Add to Home Screen</b>, then open the new icon.</p>
  <p style="margin-top:28px"><button class="link" data-a="ungate">Use in Safari anyway (testing only)</button></p></div></div>`}
 A.ungate=()=>{sessionStorage.setItem('cpos_ungate','1');render()};
+function ensureCatOrder(){if(!catalog||!Array.isArray(catalog.cats)||catalog.cats.length<2)return;const o=catalog.cats.map((c,i)=>[c,i]).sort((a,b)=>catRank(a[0].name)-catRank(b[0].name)||a[1]-b[1]).map(x=>x[0]);if(o.some((c,i)=>c!==catalog.cats[i]))catalog.cats=o}
 function render(){
+ ensureCatOrder();
  const app=$('#app');
  if(navigator.standalone===false&&!sessionStorage.getItem('cpos_ungate')&&window.top===window.self){app.innerHTML=gateHTML();return}
  if(!cfg||V.setup){app.innerHTML=setupHTML();return}
